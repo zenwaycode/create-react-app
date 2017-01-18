@@ -17,3 +17,4 @@ In this fork, we have the following changes:
    - [postcss-import](https://github.com/postcss/postcss-import) for inlining `@import` rules in CSS files
 - Build as an UMD module to import the bundle for server side rendering
 - Rename package as `sharetribe-scripts` to be able to publish it to NPM
+- Use [eslint-config-sharetribe](https://www.npmjs.com/package/eslint-config-sharetribe) ESLint configuration instead of the default `eslint-config-react-app`.
