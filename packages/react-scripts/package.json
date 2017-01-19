@@ -1,6 +1,6 @@
 {
   "name": "sharetribe-scripts",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "Opinionated react-scripts fork with a CSS setup and a UMD output for server side.",
   "repository": "sharetribe/create-react-app",
   "license": "BSD-3-Clause",
@@ -37,7 +37,7 @@
     "detect-port": "1.0.1",
     "dotenv": "2.0.0",
 
-    "eslint-config-sharetribe": "0.1.0",
+    "eslint-config-sharetribe": "0.2.0",
     "eslint": "^3.13.0",
     "eslint-plugin-jsx-a11y": "^3.0.2",
     "eslint-plugin-import": "^2.2.0",
