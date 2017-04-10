@@ -1,8 +1,8 @@
 {
   "name": "react-scripts",
-  "version": "0.9.4",
+  "version": "0.1.0",
   "description": "Configuration and scripts for Create React App.",
-  "repository": "facebookincubator/create-react-app",
+  "repository": "sharetribe/create-react-app",
   "license": "BSD-3-Clause",
   "engines": {
     "node": ">=4"
@@ -20,7 +20,7 @@
     "utils"
   ],
   "bin": {
-    "react-scripts": "./bin/react-scripts.js"
+    "sharetribe-scripts": "./bin/react-scripts.js"
   },
   "dependencies": {
     "autoprefixer": "6.7.2",
