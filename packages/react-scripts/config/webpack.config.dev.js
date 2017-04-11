@@ -248,38 +248,42 @@ const customProperties = require('postcss-custom-properties');
 // Remove original PostCSS config
 delete config.postcss;
 
+const styleLoader = {
+  loader: 'style-loader',
+};
+
 const cssLoader = {
   loader: 'css-loader',
-  options: {
+  query: {
     importLoaders: 1,
-    sourceMap: true,
-    modules: true,
-    localIdentName: '[name]__[local]__[hash:base64:5]',
+    // sourceMap: true,
+    // modules: true,
+    // localIdentName: '[name]__[local]__[hash:base64:5]',
   }
 };
 
 const postcssLoader = {
   loader: 'postcss-loader',
-  options: {
-    ident: 'postcss', // https://webpack.js.org/guides/migrating/#complex-options
-    plugins: function () {
-      return [
-        atImport(),
-        customProperties({
-          // TODO: path might not be available after ejecting
-          variables: path.join(paths.appSrc, 'styles/variables.js'),
-        }),
-        cssnext({
-          browsers: [
-            '>1%',
-            'last 4 versions',
-            'Firefox ESR',
-            'not ie < 9', // React doesn't support IE8 anyway
-          ]
-        }),
-      ];
-    }
-  }
+  // options: {
+  //   ident: 'postcss', // https://webpack.js.org/guides/migrating/#complex-options
+  //   plugins: function () {
+  //     return [
+  //       atImport(),
+  //       customProperties({
+  //         // TODO: path might not be available after ejecting
+  //         variables: path.join(paths.appSrc, 'styles/variables.js'),
+  //       }),
+  //       cssnext({
+  //         browsers: [
+  //           '>1%',
+  //           'last 4 versions',
+  //           'Firefox ESR',
+  //           'not ie < 9', // React doesn't support IE8 anyway
+  //         ]
+  //       }),
+  //     ];
+  //   }
+  // }
 };
 
 // Add custom loader setup
@@ -293,7 +297,7 @@ config.module.loaders = config.module.loaders.map(loader => {
   if (isStyleLoader) {
     return {
       test: /\.css$/,
-      use: ['style-loader', cssLoader, postcssLoader],
+      loaders: [styleLoader, cssLoader, postcssLoader],
     };
   } else {
     return loader;
