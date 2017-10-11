@@ -1,8 +1,8 @@
 {
-  "name": "react-scripts",
+  "name": "sharetribe-scripts",
   "version": "1.0.14",
-  "description": "Configuration and scripts for Create React App.",
-  "repository": "facebookincubator/create-react-app",
+  "description": "Fork of facebookincubator/create-react-app@1.0.14 with some additional features.",
+  "repository": "sharetribe/create-react-app",
   "license": "MIT",
   "engines": {
     "node": ">=6"
@@ -18,7 +18,7 @@
     "utils"
   ],
   "bin": {
-    "react-scripts": "./bin/react-scripts.js"
+    "sharetribe-scripts": "./bin/react-scripts.js"
   },
   "dependencies": {
     "autoprefixer": "7.1.2",
@@ -55,7 +55,9 @@
     "webpack": "3.5.1",
     "webpack-dev-server": "2.8.2",
     "webpack-manifest-plugin": "1.2.1",
-    "whatwg-fetch": "2.0.3"
+    "whatwg-fetch": "2.0.3",
+    "postcss-cssnext": "3.0.2",
+    "postcss-import": "11.0.0"
   },
   "devDependencies": {
     "react": "^15.5.4",
