@@ -57,7 +57,7 @@ const extractTextPluginOptions = shouldUseRelativeAssetPaths
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
-module.exports = {
+const config = {
   // Don't attempt to continue if there are any errors.
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
@@ -359,3 +359,88 @@ module.exports = {
     child_process: 'empty',
   },
 };
+
+// ================ START Sharetribe fork changes ================ //
+
+// First validate the structure of the config to ensure that we mutate
+// the config with the correct assumptions.
+const hasRules =
+      config &&
+      config.module &&
+      config.module.rules &&
+      config.module.rules.length === 2;
+const hasOneOf = hasRules &&
+      config.module.rules[1].oneOf &&
+      config.module.rules[1].oneOf.length === 4;
+const hasCssLoader = hasOneOf &&
+      config.module.rules[1].oneOf[2].test &&
+      config.module.rules[1].oneOf[2].test.test('file.css');
+
+const configStructureKnown = hasRules && hasOneOf && hasCssLoader;
+
+if (!configStructureKnown) {
+  throw new Error('create-react-app config structure changed, please check webpack.config.prod.js and update to use the changed config');
+}
+
+const atImport = require('postcss-import');
+const cssnext = require('postcss-cssnext');
+
+config.module.rules[1].oneOf[2] = {
+  test: /\.css$/,
+  loader: ExtractTextPlugin.extract(
+    Object.assign(
+      {
+        fallback: {
+          loader: require.resolve('style-loader'),
+          options: {
+            hmr: false,
+          },
+        },
+        use: [
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              importLoaders: 1,
+              minimize: true,
+              sourceMap: shouldUseSourceMap,
+              modules: true,
+              localIdentName: '[name]__[local]__[hash:base64:5]',
+            },
+          },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              // Necessary for external CSS imports to work
+              // https://github.com/facebookincubator/create-react-app/issues/2677
+              ident: 'postcss',
+              plugins: () => [
+                atImport(),
+                require('postcss-flexbugs-fixes'),
+                cssnext({
+                  browsers: [
+                    '>1%',
+                    'last 4 versions',
+                    'Firefox ESR',
+                    'not ie < 9', // React doesn't support IE8 anyway
+                  ],
+                  flexbox: 'no-2009',
+                }),
+              ],
+            },
+          },
+        ],
+      },
+      extractTextPluginOptions
+    )
+  ),
+  // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+};
+
+// Expose output as an UMD module so it can be used for server side
+// rendering.
+config.output.libraryTarget = 'umd';
+
+
+// ================ END Sharetribe fork changes ================ //
+
+module.exports = config;
