@@ -33,7 +33,7 @@ const env = getClientEnvironment(publicUrl);
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
-module.exports = {
+const config = {
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
   devtool: 'cheap-module-source-map',
@@ -287,3 +287,70 @@ module.exports = {
     hints: false,
   },
 };
+
+// ================ START Sharetribe fork changes ================ //
+
+// First validate the structure of the config to ensure that we mutate
+// the config with the correct assumptions.
+const hasRules =
+      config &&
+      config.module &&
+      config.module.rules &&
+      config.module.rules.length === 2;
+const hasOneOf = hasRules &&
+      config.module.rules[1].oneOf &&
+      config.module.rules[1].oneOf.length === 4;
+const hasCssLoader = hasOneOf &&
+      config.module.rules[1].oneOf[2].test &&
+      config.module.rules[1].oneOf[2].test.test('file.css');
+
+const configStructureKnown = hasRules && hasOneOf && hasCssLoader;
+
+if (!configStructureKnown) {
+  throw new Error('create-react-app config structure changed, please check webpack.config.dev.js and update to use the changed config');
+}
+
+const atImport = require('postcss-import');
+const cssnext = require('postcss-cssnext');
+
+// Replace default CSS rule with our custom rule
+config.module.rules[1].oneOf[2] = {
+  test: /\.css$/,
+  use: [
+    require.resolve('style-loader'),
+    {
+      loader: require.resolve('css-loader'),
+      options: {
+        importLoaders: 1,
+        sourceMap: true,
+        modules: true,
+        localIdentName: '[name]__[local]__[hash:base64:5]',
+      },
+    },
+    {
+      loader: require.resolve('postcss-loader'),
+      options: {
+        // Necessary for external CSS imports to work
+        // https://github.com/facebookincubator/create-react-app/issues/2677
+        ident: 'postcss',
+        plugins: () => [
+          atImport(),
+          require('postcss-flexbugs-fixes'),
+          cssnext({
+            browsers: [
+              '>1%',
+              'last 4 versions',
+              'Firefox ESR',
+              'not ie < 9', // React doesn't support IE8 anyway
+            ],
+            flexbox: 'no-2009',
+          }),
+        ],
+      },
+    },
+  ],
+};
+
+// ================ END Sharetribe fork changes ================ //
+
+module.exports = config;
