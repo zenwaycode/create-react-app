@@ -80,6 +80,8 @@ To test your local changes, link the local repository to the application:
 1. Publish to NPM:
 
    ```
+   npm login
+   # Check credentials from password manager
    npm publish
    ```
 
