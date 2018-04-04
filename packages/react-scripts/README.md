@@ -36,6 +36,13 @@ To update the fork to use a new version of the upstream repository:
    to a branch, making sure you merge from a specific version/tag that
    you want to base your changes on
 
+   ```
+   git fetch upstream
+   git checkout master
+   git checkout -b update-from-upstream
+   git merge <tag_to_be_merged_here_eg_v1.1.2>
+   ```
+
 1. Make your changes, test them (see below), make a PR, release
 
 ### Making changes and testing
@@ -50,8 +57,11 @@ To test your local changes, link the local repository to the application:
    yarn link
    ```
 
+   **NOTE:** if other packages have changed too, you might need to run
+   `yarn install # ignore the yarn.lock file` on the root folder too.
+
 1. In the application remove the old `sharetribe-scripts` package and
-   use the linked version:
+   use the linked version ([read more](https://yarnpkg.com/lang/en/docs/cli/link/)):
 
    ```
    yarn remove sharetribe-scripts
