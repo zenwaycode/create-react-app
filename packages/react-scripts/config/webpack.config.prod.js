@@ -373,25 +373,30 @@ const config = {
 // First validate the structure of the config to ensure that we mutate
 // the config with the correct assumptions.
 const hasRules =
-      config &&
-      config.module &&
-      config.module.rules &&
-      config.module.rules.length === 2;
-const hasOneOf = hasRules &&
-      config.module.rules[1].oneOf &&
-      config.module.rules[1].oneOf.length === 4;
-const hasCssLoader = hasOneOf &&
-      config.module.rules[1].oneOf[2].test &&
-      config.module.rules[1].oneOf[2].test.test('file.css');
+  config &&
+  config.module &&
+  config.module.rules &&
+  config.module.rules.length === 2;
+const hasOneOf =
+  hasRules &&
+  config.module.rules[1].oneOf &&
+  config.module.rules[1].oneOf.length === 4;
+const hasCssLoader =
+  hasOneOf &&
+  config.module.rules[1].oneOf[2].test &&
+  config.module.rules[1].oneOf[2].test.test('file.css');
 
 const configStructureKnown = hasRules && hasOneOf && hasCssLoader;
 
 if (!configStructureKnown) {
-  throw new Error('create-react-app config structure changed, please check webpack.config.prod.js and update to use the changed config');
+  throw new Error(
+    'create-react-app config structure changed, please check webpack.config.prod.js and update to use the changed config'
+  );
 }
 
 const atImport = require('postcss-import');
-const cssnext = require('postcss-cssnext');
+const postcssApply = require('postcss-apply');
+const postcssPresetEnv = require('postcss-preset-env');
 
 config.module.rules[1].oneOf[2] = {
   test: /\.css$/,
@@ -423,15 +428,26 @@ config.module.rules[1].oneOf[2] = {
               ident: 'postcss',
               plugins: () => [
                 atImport(),
+                postcssApply,
                 require('postcss-flexbugs-fixes'),
-                cssnext({
+                postcssPresetEnv({
+                  stage: 3,
+                  features: {
+                    'nesting-rules': true, // stage 0
+                    'custom-media-queries': true, // stage 1
+                    'custom-properties': {
+                      preserve: false, // https://github.com/csstools/postcss-preset-env/issues/37
+                    },
+                  },
                   browsers: [
                     '>1%',
                     'last 4 versions',
                     'Firefox ESR',
                     'not ie < 9', // React doesn't support IE8 anyway
                   ],
-                  flexbox: 'no-2009',
+                  autoprefixer: {
+                    flexbox: 'no-2009',
+                  },
                 }),
               ],
             },
@@ -447,7 +463,6 @@ config.module.rules[1].oneOf[2] = {
 // Expose output as an UMD module so it can be used for server side
 // rendering.
 config.output.libraryTarget = 'umd';
-
 
 // ================ END Sharetribe fork changes ================ //
 
