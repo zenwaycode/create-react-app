@@ -1,10 +1,14 @@
 # sharetribe-scripts
 
 This is a fork of the
-[react-scripts](https://github.com/facebookincubator/create-react-app/tree/master/packages/react-scripts)
+[react-scripts](https://github.com/facebook/create-react-app/tree/master/packages/react-scripts)
 package from the
-[facebookincubator/create-react-app](https://github.com/facebookincubator/create-react-app)
+[facebook/create-react-app](https://github.com/facebook/create-react-app)
 monorepo.
+You can refer to its documentation:
+
+* [Getting Started](https://github.com/facebook/create-react-app/blob/master/README.md#getting-started) – How to create a new app.
+* [User Guide](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md) – How to develop apps bootstrapped with Create React App.
 
 This package is published as
 [sharetribe-scripts](https://www.npmjs.com/package/sharetribe-scripts)
