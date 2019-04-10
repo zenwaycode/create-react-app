@@ -8,7 +8,9 @@
 // @remove-on-eject-end
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
+const resolve = require('resolve');
 const webpack = require('webpack');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -20,8 +22,12 @@ const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent')
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
+const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+// @remove-on-eject-begin
+const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
+// @remove-on-eject-end
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -32,6 +38,9 @@ const publicPath = '/';
 const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
+
+// Check if TypeScript is setup
+const useTypeScript = fs.existsSync(paths.appTsConfig);
 
 // style files regexes
 const cssRegex = /\.css$/;
@@ -144,7 +153,9 @@ const config = {
     // https://github.com/facebook/create-react-app/issues/290
     // `web` extension prefixes have been added for better support
     // for React Native Web.
-    extensions: ['.web.js', '.js', '.json', '.web.jsx', '.jsx'],
+    extensions: paths.moduleFileExtensions
+      .map(ext => `.${ext}`)
+      .filter(ext => useTypeScript || !ext.includes('ts')),
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -178,7 +189,7 @@ const config = {
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|mjs|jsx)$/,
         enforce: 'pre',
         use: [
           {
@@ -200,16 +211,6 @@ const config = {
         include: paths.appSrc,
       },
       {
-        // `mjs` support is still in its infancy in the ecosystem, so we don't
-        // support it.
-        // Modules who define their `browser` or `module` key as `mjs` force
-        // the use of this extension, so we need to tell webpack to fall back
-        // to auto mode (ES Module interop, allows ESM to import CommonJS).
-        test: /\.mjs$/,
-        include: /node_modules/,
-        type: 'javascript/auto',
-      },
-      {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
         // back to the "file" loader at the end of the loader list.
@@ -228,7 +229,7 @@ const config = {
           // Process application JS with Babel.
           // The preset includes JSX, Flow, and some ESnext features.
           {
-            test: /\.(js|jsx)$/,
+            test: /\.(js|mjs|jsx|ts|tsx)$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
@@ -274,7 +275,7 @@ const config = {
           // Process any JS outside of the app with Babel.
           // Unlike the application JS, we only compile the standard ES features.
           {
-            test: /\.js$/,
+            test: /\.(js|mjs)$/,
             exclude: /@babel(?:\/|\\{1,2})runtime/,
             loader: require.resolve('babel-loader'),
             options: {
@@ -361,7 +362,7 @@ const config = {
             // its runtime that would otherwise be processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.(js|jsx)$/, /\.html$/, /\.json$/],
+            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
@@ -414,7 +415,36 @@ const config = {
       fileName: 'asset-manifest.json',
       publicPath: publicPath,
     }),
-  ],
+    // TypeScript type checking
+    useTypeScript &&
+      new ForkTsCheckerWebpackPlugin({
+        typescript: resolve.sync('typescript', {
+          basedir: paths.appNodeModules,
+        }),
+        async: false,
+        checkSyntacticErrors: true,
+        tsconfig: paths.appTsConfig,
+        compilerOptions: {
+          module: 'esnext',
+          moduleResolution: 'node',
+          resolveJsonModule: true,
+          isolatedModules: true,
+          noEmit: true,
+          jsx: 'preserve',
+        },
+        reportFiles: [
+          '**',
+          '!**/*.json',
+          '!**/__tests__/**',
+          '!**/?(*.)(spec|test).*',
+          '!src/setupProxy.js',
+          '!src/setupTests.*',
+        ],
+        watch: paths.appSrc,
+        silent: true,
+        formatter: typescriptFormatter,
+      }),
+  ].filter(Boolean),
 
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

@@ -7,8 +7,8 @@ package from the
 monorepo.
 You can refer to its documentation:
 
-* [Getting Started](https://github.com/facebook/create-react-app/blob/master/README.md#getting-started) – How to create a new app.
-* [User Guide](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md) – How to develop apps bootstrapped with Create React App.
+- [Getting Started](https://github.com/facebook/create-react-app/blob/master/README.md#getting-started) – How to create a new app.
+- [User Guide](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md) – How to develop apps bootstrapped with Create React App.
 
 This package is published as
 [sharetribe-scripts](https://www.npmjs.com/package/sharetribe-scripts)
@@ -19,10 +19,10 @@ which version of `react-scripts` this fork is built from.
 
 ## Differences to `react-scripts`
 
- - Use [CSS Modules](https://github.com/css-modules/css-modules)
- - Use [cssnext](http://cssnext.io/)
- - Use [postcss-import](https://github.com/postcss/postcss-import)
- - Build an UMD module in production mode to support server side rendering
+- Use [CSS Modules](https://github.com/css-modules/css-modules)
+- Use [cssnext](http://cssnext.io/)
+- Use [postcss-import](https://github.com/postcss/postcss-import)
+- Build an UMD module in production mode to support server side rendering
 
 ## Development
 
