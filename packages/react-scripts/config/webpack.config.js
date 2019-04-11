@@ -35,6 +35,8 @@ const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
 
+const sharetribeConfigUtils = require('./sharetribeWebpackConfig');
+
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
@@ -88,7 +90,7 @@ module.exports = function(webpackEnv) {
       },
       {
         loader: require.resolve('css-loader'),
-        options: cssOptions,
+        options: sharetribeConfigUtils.cssOptionsWithModules(cssOptions),
       },
       {
         // Options for PostCSS as we reference these options twice
@@ -99,15 +101,7 @@ module.exports = function(webpackEnv) {
           // Necessary for external CSS imports to work
           // https://github.com/facebook/create-react-app/issues/2677
           ident: 'postcss',
-          plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            }),
-          ],
+          plugins: () => sharetribeConfigUtils.postcssPlugins,
           sourceMap: isEnvProduction && shouldUseSourceMap,
         },
       },
@@ -123,7 +117,7 @@ module.exports = function(webpackEnv) {
     return loaders;
   };
 
-  return {
+  const config = {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
@@ -650,4 +644,7 @@ module.exports = function(webpackEnv) {
     // our own hints via the FileSizeReporter
     performance: false,
   };
+
+  // Before config is ready to be returned, we need to add our configurations to it.
+  return sharetribeConfigUtils.applySharetribeConfigs(config, isEnvProduction);
 };
