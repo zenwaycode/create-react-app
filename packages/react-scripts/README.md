@@ -19,9 +19,10 @@ which version of `react-scripts` this fork is built from.
 
 ## Differences to `react-scripts`
 
-- Use [CSS Modules](https://github.com/css-modules/css-modules)
-- Use [cssnext](http://cssnext.io/)
+- Use [CSS Modules](https://github.com/css-modules/css-modules) on every css file
+- Use [postcss-preset-env](https://github.com/csstools/postcss-preset-env)
 - Use [postcss-import](https://github.com/postcss/postcss-import)
+- Use [postcss-apply](https://github.com/pascalduez/postcss-apply)
 - Build an UMD module in production mode to support server side rendering
 
 ## Development
