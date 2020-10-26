@@ -11,6 +11,7 @@
 'use strict';
 
 const loaderUtils = require('loader-utils');
+const path = require('path');
 
 // NOTE: This is otherwise identical to "../../react-dev-utils/getCSSModuleLocalIdent.js",
 //       but since we support CSS Modules from any .css files (due to backwards compatibilty)
@@ -29,7 +30,7 @@ const getCSSModuleLocalIdent = function sharetribeGetLocalIdent(
     : '[name]';
   // Create a hash based on a the file location and class name. Will be unique across a project, and close to globally unique.
   const hash = loaderUtils.getHashDigest(
-    context.resourcePath + localName,
+    path.posix.relative(context.rootContext, context.resourcePath) + localName,
     'md5',
     'base64',
     5
@@ -47,8 +48,9 @@ const getCSSModuleLocalIdent = function sharetribeGetLocalIdent(
 // CSS options: all CSS files will have CSS Modules turned "on".
 const cssOptionsWithModules = cssOptions =>
   Object.assign({}, cssOptions, {
-    modules: true,
-    getLocalIdent: getCSSModuleLocalIdent,
+    modules: {
+      getLocalIdent: getCSSModuleLocalIdent,
+    },
   });
 
 // PostCSS plugins:
