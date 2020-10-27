@@ -90,17 +90,18 @@ const checkConfigStructure = config => {
     config &&
     config.module &&
     config.module.rules &&
-    config.module.rules.length === 3;
+    config.module.rules.length === 2;
   const hasOneOf =
     hasRules &&
-    config.module.rules[2].oneOf &&
-    config.module.rules[2].oneOf.length === 8;
+    config.module.rules[1].oneOf &&
+    config.module.rules[1].oneOf.length === 9;
   const hasCssLoader =
     hasOneOf &&
-    config.module.rules[2].oneOf[3].test &&
-    config.module.rules[2].oneOf[3].test.test('file.css');
+    config.module.rules[1].oneOf[4].test &&
+    config.module.rules[1].oneOf[4].test.test('file.css');
+  const hasSplitChunks = config.optimization && config.optimization.splitChunks;
 
-  const configStructureKnown = hasRules && hasOneOf && hasCssLoader;
+  const configStructureKnown = hasRules && hasOneOf && hasCssLoader && hasSplitChunks;
 
   if (!configStructureKnown) {
     throw new Error(
