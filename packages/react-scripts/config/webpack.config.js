@@ -119,7 +119,7 @@ module.exports = function(webpackEnv) {
       },
       {
         loader: require.resolve('css-loader'),
-        options: sharetribeConfigUtils.cssOptionsWithModules(cssOptions),
+        options: cssOptions,
       },
       {
         // Options for PostCSS as we reference these options twice
