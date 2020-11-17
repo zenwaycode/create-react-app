@@ -1,57 +1,4 @@
-/**
- * Refactored from ../../react-dev-utils/getCSSModuleLocalIdent
- * Main difference: both index.css and index.module.css use CSS Modules
- *
- * Copyright (c) 2015-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 'use strict';
-
-const loaderUtils = require('loader-utils');
-const path = require('path');
-
-// NOTE: This is otherwise identical to "../../react-dev-utils/getCSSModuleLocalIdent.js",
-//       but since we support CSS Modules from any .css files (due to backwards compatibilty)
-//       we had to changes the regexp in "fileNameOrFolder" constant.
-const getCSSModuleLocalIdent = function sharetribeGetLocalIdent(
-  context,
-  localIdentName,
-  localName,
-  options
-) {
-  // Use the filename or folder name, based on some uses the index.js / index.module.(css|scss|sass) project style
-  const fileNameOrFolder = context.resourcePath.match(
-    /(index|index\.module)\.(css|scss|sass)$/
-  )
-    ? '[folder]'
-    : '[name]';
-  // Create a hash based on a the file location and class name. Will be unique across a project, and close to globally unique.
-  const hash = loaderUtils.getHashDigest(
-    path.posix.relative(context.rootContext, context.resourcePath) + localName,
-    'md5',
-    'base64',
-    5
-  );
-  // Use loaderUtils to find the file or folder name
-  const className = loaderUtils.interpolateName(
-    context,
-    fileNameOrFolder + '_' + localName + '__' + hash,
-    options
-  );
-  // remove the .module that appears in every classname when based on the file.
-  return className.replace('.module_', '_');
-};
-
-// CSS options: all CSS files will have CSS Modules turned "on".
-const cssOptionsWithModules = cssOptions =>
-  Object.assign({}, cssOptions, {
-    modules: {
-      getLocalIdent: getCSSModuleLocalIdent,
-    },
-  });
 
 // PostCSS plugins:
 // - postcss-import, postcss-apply are our additions
@@ -67,18 +14,11 @@ const postcssPlugins = [
       flexbox: 'no-2009',
     },
     features: {
+      "custom-properties": false,
       'nesting-rules': true, // stage 0
       'custom-media-queries': true, // stage 1
-      // custom-properties config is moved outside due to a bug:
-      // https://github.com/csstools/postcss-preset-env/issues/123
-      // 'custom-properties': {
-      //   preserve: false, // https://github.com/csstools/postcss-preset-env/issues/37
-      // },
     },
     stage: 3,
-  }),
-  require('postcss-custom-properties')({
-    preserve: false,
   }),
 ];
 
@@ -90,17 +30,18 @@ const checkConfigStructure = config => {
     config &&
     config.module &&
     config.module.rules &&
-    config.module.rules.length === 3;
+    config.module.rules.length === 2;
   const hasOneOf =
     hasRules &&
-    config.module.rules[2].oneOf &&
-    config.module.rules[2].oneOf.length === 8;
+    config.module.rules[1].oneOf &&
+    config.module.rules[1].oneOf.length === 9;
   const hasCssLoader =
     hasOneOf &&
-    config.module.rules[2].oneOf[3].test &&
-    config.module.rules[2].oneOf[3].test.test('file.css');
+    config.module.rules[1].oneOf[4].test &&
+    config.module.rules[1].oneOf[4].test.test('file.css');
+  const hasSplitChunks = config.optimization && config.optimization.splitChunks;
 
-  const configStructureKnown = hasRules && hasOneOf && hasCssLoader;
+  const configStructureKnown = hasRules && hasOneOf && hasCssLoader && hasSplitChunks;
 
   if (!configStructureKnown) {
     throw new Error(
@@ -140,7 +81,6 @@ const applySharetribeConfigs = (config, isEnvProduction) => {
 };
 
 module.exports = {
-  cssOptionsWithModules,
   postcssPlugins,
   applySharetribeConfigs,
 };
