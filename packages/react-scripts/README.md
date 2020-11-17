@@ -19,8 +19,7 @@ which version of `react-scripts` this fork is built from.
 
 ## Differences to `react-scripts`
 
-- Use [CSS Modules](https://github.com/css-modules/css-modules) on every css file
-- Use [postcss-preset-env](https://github.com/csstools/postcss-preset-env)
+- Use [postcss-preset-env](https://github.com/csstools/postcss-preset-env) with live CSS Custom Properties.
 - Use [postcss-import](https://github.com/postcss/postcss-import)
 - Use [postcss-apply](https://github.com/pascalduez/postcss-apply)
 - Build an UMD module in production mode to support server side rendering
@@ -52,7 +51,7 @@ To update the fork to use a new version of the upstream repository:
 
 ### Making changes and testing
 
-To test your local changes, link the local repository to the application:
+To test your local changes, use [Verdaccio](https://verdaccio.org/en/) or link the local repository to the application:
 
 1. In the `create-react-app/packages/react-scripts` directory, install
    dependencies and make a link of the package:
