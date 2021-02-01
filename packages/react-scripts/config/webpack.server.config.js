@@ -296,6 +296,17 @@ module.exports = function(webpackEnv, target = 'web') {
                 customize: require.resolve(
                   'babel-preset-react-app/webpack-overrides'
                 ),
+                presets: [
+                  '@babel/preset-react',
+                  ['@babel/preset-env', {'useBuiltIns': 'entry'}],
+                  // [
+                  //   require.resolve('babel-preset-react-app'),
+                  //   {
+                  //     runtime: hasJsxRuntime ? 'automatic' : 'classic',
+                  //   },
+                  // ]
+                  ,
+                ],
                 plugins: [
                   require.resolve('@loadable/babel-plugin'),
                   [
@@ -326,17 +337,19 @@ module.exports = function(webpackEnv, target = 'web') {
             // Unlike the application JS, we only compile the standard ES features.
             {
               test: /\.(js|mjs)$/,
-              exclude: /@babel(?:\/|\\{1,2})runtime/,
+              // exclude: /@babel(?:\/|\\{1,2})runtime/,
               loader: require.resolve('babel-loader'),
               options: {
                 babelrc: false,
                 configFile: false,
                 compact: false,
                 presets: [
-                  [
-                    require.resolve('babel-preset-react-app/dependencies'),
-                    { helpers: true },
-                  ],
+                  // [
+                  //   require.resolve('babel-preset-react-app/dependencies'),
+                  //   { helpers: true },
+                  // ],
+                  '@babel/preset-react',
+                  ['@babel/preset-env', {'useBuiltIns': 'entry'}],
                 ],
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled

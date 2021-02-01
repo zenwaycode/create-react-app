@@ -400,12 +400,14 @@ module.exports = function(webpackEnv) {
                 babelrc: false,
                 configFile: false,
                 presets: [
-                  [
-                    require.resolve('babel-preset-react-app'),
-                    {
-                      runtime: hasJsxRuntime ? 'automatic' : 'classic',
-                    },
-                  ],
+                  '@babel/preset-react',
+                  ['@babel/preset-env', {'useBuiltIns': 'entry'}],
+                  // [
+                  //   require.resolve('babel-preset-react-app'),
+                  //   {
+                  //     runtime: hasJsxRuntime ? 'automatic' : 'classic',
+                  //   },
+                  // ],
                 ],
                 // Make sure we have a unique cache identifier, erring on the
                 // side of caution.
@@ -462,8 +464,10 @@ module.exports = function(webpackEnv) {
                 compact: false,
                 presets: [
                   [
-                    require.resolve('babel-preset-react-app/dependencies'),
-                    { helpers: true },
+                    // require.resolve('babel-preset-react-app/dependencies'),
+                    // { helpers: true },
+                  '@babel/preset-react',
+                  ['@babel/preset-env', {'useBuiltIns': 'entry'}],
                   ],
                 ],
                 plugins: [
