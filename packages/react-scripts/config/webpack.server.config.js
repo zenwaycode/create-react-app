@@ -179,7 +179,7 @@ module.exports = function(webpackEnv, target = 'web') {
       // 'react',
       //'react-dom',
       '@loadable/component',
-      //nodeExternals(), // Ignore all modules in node_modules folder
+      nodeExternals(), // Ignore all modules in node_modules folder
     ],
 
     output: {
@@ -189,8 +189,8 @@ module.exports = function(webpackEnv, target = 'web') {
       pathinfo: isEnvDevelopment,
       // node build
       libraryTarget: 'commonjs2',
-      filename: 'js/[name].[contenthash:8].js',
-      chunkFilename: 'js/[name].[contenthash:8].chunk.js',
+      filename: '[name].[contenthash:8].js',
+      chunkFilename: '[name].[contenthash:8].chunk.js',
 
       // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
@@ -305,6 +305,7 @@ module.exports = function(webpackEnv, target = 'web') {
                     require.resolve('babel-preset-react-app'),
                     {
                       runtime: hasJsxRuntime ? 'automatic' : 'classic',
+                      useESModules: false,
                     },
                   ],
                 ],
@@ -363,45 +364,8 @@ module.exports = function(webpackEnv, target = 'web') {
                 compact: false,
                 presets: [
                   [
-                    require.resolve('babel-preset-react-app/dependencies'),
-                    { helpers: true },
-                  ],
-                ],
-                cacheDirectory: true,
-                // See #6846 for context on why cacheCompression is disabled
-                cacheCompression: false,
-                // @remove-on-eject-begin
-                cacheIdentifier: getCacheIdentifier(
-                  isEnvProduction
-                    ? 'production'
-                    : isEnvDevelopment && 'development',
-                  [
-                    'babel-plugin-named-asset-import',
-                    'babel-preset-react-app',
-                    'react-dev-utils',
-                    'react-scripts',
-                  ]
-                ),
-                // @remove-on-eject-end
-                // Babel sourcemaps are needed for debugging into node_modules
-                // code.  Without the options below, debuggers like VSCode
-                // show incorrect code and set breakpoints on the wrong lines.
-                sourceMaps: shouldUseSourceMap,
-                inputSourceMap: shouldUseSourceMap,
-              },
-            },
-            {
-              test: /@babel(?:\/|\\{1,2})runtime\.(js|mjs)$/,
-              loader: require.resolve('babel-loader'),
-              options: {
-                babelrc: false,
-                configFile: false,
-                compact: false,
-                presets: [
-                  require.resolve('@babel/preset-react'),
-                  [
-                    require.resolve('@babel/preset-env'),
-                    { 'useBuiltIns': 'entry' },
+                    require('./sharetribeBabelPresetReactAppDependencies'),
+                    { helpers: false },
                   ],
                 ],
                 cacheDirectory: true,
