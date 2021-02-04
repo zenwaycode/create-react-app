@@ -170,7 +170,7 @@ module.exports = function(webpackEnv, target = 'web') {
     //     ? 'source-map'
     //     : false
     //   : isEnvDevelopment && 'cheap-module-source-map',
-    entry: paths.appIndexServerJs,
+    entry: paths.appIndexJs,
     externals: [
       // 'react-helmet-async',
       // 'babel-polyfill',
