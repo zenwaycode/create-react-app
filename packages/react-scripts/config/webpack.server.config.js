@@ -26,7 +26,6 @@ const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-// const ESLintPlugin = require('eslint-webpack-plugin');
 const paths = require('./paths');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
@@ -39,7 +38,6 @@ const nodeExternals = require('webpack-node-externals');
 // @remove-on-eject-begin
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
-//const postcssNormalize = require('postcss-normalize');
 
 const sharetribeConfigUtils = require('./sharetribeWebpackConfig');
 
@@ -647,24 +645,6 @@ module.exports = function(webpackEnv, target = 'web') {
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
         }),
-      // new ESLintPlugin({
-      //   // Plugin options
-      //   extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
-      //   formatter: require.resolve('react-dev-utils/eslintFormatter'),
-      //   eslintPath: require.resolve('eslint'),
-      //   context: paths.appSrc,
-      //   // ESLint class options
-      //   cwd: paths.appPath,
-      //   resolvePluginsRelativeTo: __dirname,
-      //   baseConfig: {
-      //     extends: [require.resolve('eslint-config-react-app/base')],
-      //     rules: {
-      //       ...(!hasJsxRuntime && {
-      //         'react/react-in-jsx-scope': 'error',
-      //       }),
-      //     },
-      //   },
-      // }),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell webpack to provide empty mocks for them so importing them works.
@@ -684,5 +664,5 @@ module.exports = function(webpackEnv, target = 'web') {
   };
 
   // Before config is ready to be returned, we need to add our configurations to it.
-  return config;//sharetribeConfigUtils.applySharetribeConfigs(config, isEnvProduction, target, paths);
+  return config;
 };
