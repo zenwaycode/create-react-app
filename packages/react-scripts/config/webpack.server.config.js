@@ -364,8 +364,11 @@ module.exports = function(webpackEnv, target = 'web') {
                 compact: false,
                 presets: [
                   [
-                    require('./sharetribeBabelPresetReactAppDependencies'),
-                    { helpers: false },
+                    require.resolve('babel-preset-react-app'),
+                    {
+                      runtime: hasJsxRuntime ? 'automatic' : 'classic',
+                      useESModules: false,
+                    },
                   ],
                 ],
                 cacheDirectory: true,
