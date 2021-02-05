@@ -791,5 +791,8 @@ module.exports = function(webpackEnv) {
   };
 
   // Sharetribe custom: wrap config with customizations
-  return sharetribeConfigUtils.applySharetribeConfigs(config, isEnvProduction);
+  return sharetribeConfigUtils.applySharetribeConfigs(config, {
+    target: 'web',
+    isEnvProduction,
+  });
 };

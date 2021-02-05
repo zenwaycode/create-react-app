@@ -1,7 +1,10 @@
 'use strict';
 
+const path = require('path');
 const cloneDeep = require('lodash/cloneDeep');
 const LoadablePlugin = require('@loadable/webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
+const paths = require('./paths');
 
 // PostCSS plugins:
 // - postcss-import, postcss-apply are our additions
@@ -43,8 +46,15 @@ const checkConfigStructure = config => {
     config.module.rules[1].oneOf[4].test &&
     config.module.rules[1].oneOf[4].test.test('file.css');
   const hasPlugins = !!config.plugins;
+  const hasOutput = !!config.output;
+  const hasOptimization = !!config.optimization;
 
-  const configStructureKnown = hasRules && hasOneOf && hasCssLoader && hasPlugins;
+  const configStructureKnown = hasRules
+        && hasOneOf
+        && hasCssLoader
+        && hasPlugins
+        && hasOutput
+        && hasOptimization;
 
   if (!configStructureKnown) {
     throw new Error(
@@ -55,12 +65,39 @@ const checkConfigStructure = config => {
   return configStructureKnown;
 };
 
-const applySharetribeConfigs = (config, isEnvProduction) => {
+const applySharetribeConfigs = (config, options) => {
+  const { target, isEnvProduction } = options;
+  const isServer = target === 'node';
   checkConfigStructure(config);
 
   // Add LoadablePlugin to the optimization plugins
   const newConfig = cloneDeep(config);
   newConfig.plugins = [new LoadablePlugin(), ...config.plugins];
+
+  if (isServer) {
+    // Set name and target to node as this is running in the server
+    newConfig.name = 'node';
+    newConfig.target = 'node';
+
+    // Add custom externals as server doesn't need to bundle everything
+    newConfig.externals = [
+      '@loadable/component',
+      nodeExternals(), // Ignore all modules in node_modules folder
+    ];
+
+    // Use a 'node' subdirectory for the server build
+    newConfig.output.path = isEnvProduction
+      ? path.join(paths.appBuild, 'node')
+      : undefined;
+
+    // Set build output specifically for node
+    newConfig.output.libraryTarget = 'commonjs2';
+    newConfig.output.filename = '[name].[contenthash:8].js';
+    newConfig.output.chunkFilename = '[name].[contenthash:8].chunk.js';
+
+    // Disable runtimeChunk as it seems to break the server build
+    newConfig.optimization.runtimeChunk = undefined;
+  }
 
   return newConfig;
 };

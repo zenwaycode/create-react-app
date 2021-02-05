@@ -46,7 +46,7 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 }
 
 // Generate configuration
-const conf = configFactory('production', 'node');
+const conf = configFactory('production');
 
 // Start the webpack build
 build(conf)

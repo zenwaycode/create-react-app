@@ -39,6 +39,7 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
 //const postcssNormalize = require('postcss-normalize');
 
+// Sharetribe custom: import utils
 const sharetribeConfigUtils = require('./sharetribeWebpackConfig');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -130,6 +131,7 @@ module.exports = function(webpackEnv) {
           // Necessary for external CSS imports to work
           // https://github.com/facebook/create-react-app/issues/2677
           ident: 'postcss',
+          // Sharetribe custom: use custom set of PostCSS plugins
           plugins: () => sharetribeConfigUtils.postcssPlugins,
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
@@ -404,6 +406,9 @@ module.exports = function(webpackEnv) {
                     require.resolve('babel-preset-react-app'),
                     {
                       runtime: hasJsxRuntime ? 'automatic' : 'classic',
+
+                      // Sharetribe custom: prevent using ES modules in Node
+                      useESModules: false,
                     },
                   ],
                 ],
@@ -425,6 +430,11 @@ module.exports = function(webpackEnv) {
                 ),
                 // @remove-on-eject-end
                 plugins: [
+
+                  // Sharetribe custom: add loadable babel plugin for
+                  // application files
+                  require.resolve('@loadable/babel-plugin'),
+
                   [
                     require.resolve('babel-plugin-named-asset-import'),
                     {
@@ -590,7 +600,9 @@ module.exports = function(webpackEnv) {
         Object.assign(
           {},
           {
-            inject: true,
+            // Sharetribe custom: inject scripts only in dev env, prod
+            // env server already injects required scripts.
+            inject: isEnvDevelopment,
             template: paths.appHtml,
           },
           isEnvProduction
@@ -772,6 +784,9 @@ module.exports = function(webpackEnv) {
     performance: false,
   };
 
-  // Before config is ready to be returned, we need to add our configurations to it.
-  return sharetribeConfigUtils.applySharetribeConfigs(config, isEnvProduction);
+  // Sharetribe custom: wrap config with customizations
+  return sharetribeConfigUtils.applySharetribeConfigs(config, {
+    target: 'node',
+    isEnvProduction,
+  });
 };
