@@ -39,6 +39,7 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
 //const postcssNormalize = require('postcss-normalize');
 
+// Sharetribe custom: import utils
 const sharetribeConfigUtils = require('./sharetribeWebpackConfig');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -133,6 +134,7 @@ module.exports = function(webpackEnv) {
           // Necessary for external CSS imports to work
           // https://github.com/facebook/create-react-app/issues/2677
           ident: 'postcss',
+          // Sharetribe custom: use custom set of PostCSS plugins
           plugins: () => sharetribeConfigUtils.postcssPlugins,
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
@@ -786,6 +788,6 @@ module.exports = function(webpackEnv) {
     performance: false,
   };
 
-  // Before config is ready to be returned, we need to add our configurations to it.
+  // Sharetribe custom: wrap config with customizations
   return sharetribeConfigUtils.applySharetribeConfigs(config, isEnvProduction);
 };
