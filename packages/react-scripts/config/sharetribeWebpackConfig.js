@@ -1,5 +1,8 @@
 'use strict';
 
+const cloneDeep = require('lodash/cloneDeep');
+const LoadablePlugin = require('@loadable/webpack-plugin');
+
 // PostCSS plugins:
 // - postcss-import, postcss-apply are our additions
 // - postcss-preset-env: we use nesting and custom-media-queries.
@@ -39,9 +42,9 @@ const checkConfigStructure = config => {
     hasOneOf &&
     config.module.rules[1].oneOf[4].test &&
     config.module.rules[1].oneOf[4].test.test('file.css');
-  const hasSplitChunks = config.optimization && config.optimization.splitChunks;
+  const hasPlugins = !!config.plugins;
 
-  const configStructureKnown = hasRules && hasOneOf && hasCssLoader && hasSplitChunks;
+  const configStructureKnown = hasRules && hasOneOf && hasCssLoader && hasPlugins;
 
   if (!configStructureKnown) {
     throw new Error(
@@ -54,30 +57,12 @@ const checkConfigStructure = config => {
 
 const applySharetribeConfigs = (config, isEnvProduction) => {
   checkConfigStructure(config);
-  const productionBuildOutputMaybe = isEnvProduction
-    ? {
-        // universal build
-        libraryTarget: 'umd',
-        // Fix bug on universal build
-        // https://github.com/webpack/webpack/issues/6784
-        globalObject: `(typeof self !== 'undefined' ? self : this)`,
-      }
-    : {};
-  return config.optimization
-    ? Object.assign({}, config, {
-        optimization: Object.assign({}, config.optimization, {
-          splitChunks: {
-            // Don't use chunks yet - we need to create a separate server config/build for that
-            cacheGroups: {
-              default: false,
-            },
-          },
-          // Don't use chunks yet - we need to create a separate server config/build for that
-          runtimeChunk: false,
-        }),
-        output: Object.assign({}, config.output, productionBuildOutputMaybe),
-      })
-    : config;
+
+  // Add LoadablePlugin to the optimization plugins
+  const newConfig = cloneDeep(config);
+  newConfig.plugins = [new LoadablePlugin(), ...config.plugins];
+
+  return newConfig;
 };
 
 module.exports = {
