@@ -595,7 +595,9 @@ module.exports = function(webpackEnv) {
         Object.assign(
           {},
           {
-            inject: true,
+            // Sharetribe custom: inject scripts only in dev env, prod
+            // env server already injects required scripts.
+            inject: isEnvDevelopment,
             template: paths.appHtml,
           },
           isEnvProduction
