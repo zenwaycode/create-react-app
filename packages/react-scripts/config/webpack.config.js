@@ -92,9 +92,15 @@ const hasJsxRuntime = (() => {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv) {
+// Sharetribe custom: add target parameter to change config between
+// web and node.
+module.exports = function(webpackEnv, target = 'web') {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
+
+  // Sharetribe custom: boolean flag to change config based on the
+  // target. Node target is used for server builds.
+  const isTargetNode = target === 'node';
 
   // Variable used for enabling profiling in Production
   // passed into alias object. Uses a flag if passed into the build command
@@ -406,6 +412,11 @@ module.exports = function(webpackEnv) {
                     require.resolve('babel-preset-react-app'),
                     {
                       runtime: hasJsxRuntime ? 'automatic' : 'classic',
+
+                      // Sharetribe custom: prevent using ES modules
+                      // in Node, leave as undefined otherwise to get
+                      // the default behavior.
+                      useESModules: isTargetNode ? false : undefined,
                     },
                   ],
                 ],
@@ -430,6 +441,11 @@ module.exports = function(webpackEnv) {
                 ),
                 // @remove-on-eject-end
                 plugins: [
+
+                  // Sharetribe custom: add loadable babel plugin for
+                  // application files
+                  isTargetNode && require.resolve('@loadable/babel-plugin'),
+
                   [
                     require.resolve('babel-plugin-named-asset-import'),
                     {
@@ -792,7 +808,7 @@ module.exports = function(webpackEnv) {
 
   // Sharetribe custom: wrap config with customizations
   return sharetribeConfigUtils.applySharetribeConfigs(config, {
-    target: 'web',
+    target,
     isEnvProduction,
   });
 };

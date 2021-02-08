@@ -67,14 +67,14 @@ const checkConfigStructure = config => {
 
 const applySharetribeConfigs = (config, options) => {
   const { target, isEnvProduction } = options;
-  const isServer = target === 'node';
+  const isTargetNode = target === 'node';
   checkConfigStructure(config);
 
   // Add LoadablePlugin to the optimization plugins
   const newConfig = cloneDeep(config);
   newConfig.plugins = [new LoadablePlugin(), ...config.plugins];
 
-  if (isServer) {
+  if (isTargetNode) {
     // Set name and target to node as this is running in the server
     newConfig.name = 'node';
     newConfig.target = 'node';
