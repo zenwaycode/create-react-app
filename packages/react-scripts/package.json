@@ -1,6 +1,6 @@
 {
   "name": "sharetribe-scripts",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "Fork of facebookincubator/create-react-app@4.0.0 with some additional features.",
   "repository": {
     "type": "git",
