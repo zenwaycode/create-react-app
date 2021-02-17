@@ -22,7 +22,7 @@ which version of `react-scripts` this fork is built from.
 - Use [postcss-preset-env](https://github.com/csstools/postcss-preset-env) with live CSS Custom Properties.
 - Use [postcss-import](https://github.com/postcss/postcss-import)
 - Use [postcss-apply](https://github.com/pascalduez/postcss-apply)
-- Build an UMD module in production mode to support server side rendering
+- A separate `build-server` script that makes a build to use in SSR (server side rendering)
 
 ## Development
 
