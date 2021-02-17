@@ -39,6 +39,7 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
 //const postcssNormalize = require('postcss-normalize');
 
+// Sharetribe custom: import utils
 const sharetribeConfigUtils = require('./sharetribeWebpackConfig');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -91,9 +92,15 @@ const hasJsxRuntime = (() => {
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv) {
+// Sharetribe custom: add target parameter to change config between
+// web and node.
+module.exports = function(webpackEnv, target = 'web') {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
+
+  // Sharetribe custom: boolean flag to change config based on the
+  // target. Node target is used for server builds.
+  const isTargetNode = target === 'node';
 
   // Variable used for enabling profiling in Production
   // passed into alias object. Uses a flag if passed into the build command
@@ -133,6 +140,7 @@ module.exports = function(webpackEnv) {
           // Necessary for external CSS imports to work
           // https://github.com/facebook/create-react-app/issues/2677
           ident: 'postcss',
+          // Sharetribe custom: use custom set of PostCSS plugins
           plugins: () => sharetribeConfigUtils.postcssPlugins,
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
@@ -404,6 +412,11 @@ module.exports = function(webpackEnv) {
                     require.resolve('babel-preset-react-app'),
                     {
                       runtime: hasJsxRuntime ? 'automatic' : 'classic',
+
+                      // Sharetribe custom: prevent using ES modules
+                      // in Node, leave as undefined otherwise to get
+                      // the default behavior.
+                      useESModules: isTargetNode ? false : undefined,
                     },
                   ],
                 ],
@@ -428,6 +441,11 @@ module.exports = function(webpackEnv) {
                 ),
                 // @remove-on-eject-end
                 plugins: [
+
+                  // Sharetribe custom: add loadable babel plugin for
+                  // application files
+                  isTargetNode && require.resolve('@loadable/babel-plugin'),
+
                   [
                     require.resolve('babel-plugin-named-asset-import'),
                     {
@@ -593,7 +611,9 @@ module.exports = function(webpackEnv) {
         Object.assign(
           {},
           {
-            inject: true,
+            // Sharetribe custom: inject scripts only in dev env, prod
+            // env server already injects required scripts.
+            inject: isEnvDevelopment,
             template: paths.appHtml,
           },
           isEnvProduction
@@ -786,6 +806,9 @@ module.exports = function(webpackEnv) {
     performance: false,
   };
 
-  // Before config is ready to be returned, we need to add our configurations to it.
-  return sharetribeConfigUtils.applySharetribeConfigs(config, isEnvProduction);
+  // Sharetribe custom: wrap config with customizations
+  return sharetribeConfigUtils.applySharetribeConfigs(config, {
+    target,
+    isEnvProduction,
+  });
 };

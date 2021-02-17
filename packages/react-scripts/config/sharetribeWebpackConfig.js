@@ -1,5 +1,11 @@
 'use strict';
 
+const path = require('path');
+const cloneDeep = require('lodash/cloneDeep');
+const LoadablePlugin = require('@loadable/webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
+const paths = require('./paths');
+
 // PostCSS plugins:
 // - postcss-import, postcss-apply are our additions
 // - postcss-preset-env: we use nesting and custom-media-queries.
@@ -39,9 +45,16 @@ const checkConfigStructure = config => {
     hasOneOf &&
     config.module.rules[1].oneOf[4].test &&
     config.module.rules[1].oneOf[4].test.test('file.css');
-  const hasSplitChunks = config.optimization && config.optimization.splitChunks;
+  const hasPlugins = !!config.plugins;
+  const hasOutput = !!config.output;
+  const hasOptimization = !!config.optimization;
 
-  const configStructureKnown = hasRules && hasOneOf && hasCssLoader && hasSplitChunks;
+  const configStructureKnown = hasRules
+        && hasOneOf
+        && hasCssLoader
+        && hasPlugins
+        && hasOutput
+        && hasOptimization;
 
   if (!configStructureKnown) {
     throw new Error(
@@ -52,32 +65,41 @@ const checkConfigStructure = config => {
   return configStructureKnown;
 };
 
-const applySharetribeConfigs = (config, isEnvProduction) => {
+const applySharetribeConfigs = (config, options) => {
+  const { target, isEnvProduction } = options;
+  const isTargetNode = target === 'node';
   checkConfigStructure(config);
-  const productionBuildOutputMaybe = isEnvProduction
-    ? {
-        // universal build
-        libraryTarget: 'umd',
-        // Fix bug on universal build
-        // https://github.com/webpack/webpack/issues/6784
-        globalObject: `(typeof self !== 'undefined' ? self : this)`,
-      }
-    : {};
-  return config.optimization
-    ? Object.assign({}, config, {
-        optimization: Object.assign({}, config.optimization, {
-          splitChunks: {
-            // Don't use chunks yet - we need to create a separate server config/build for that
-            cacheGroups: {
-              default: false,
-            },
-          },
-          // Don't use chunks yet - we need to create a separate server config/build for that
-          runtimeChunk: false,
-        }),
-        output: Object.assign({}, config.output, productionBuildOutputMaybe),
-      })
-    : config;
+
+  // Add LoadablePlugin to the optimization plugins
+  const newConfig = cloneDeep(config);
+  newConfig.plugins = [new LoadablePlugin(), ...config.plugins];
+
+  if (isTargetNode) {
+    // Set name and target to node as this is running in the server
+    newConfig.name = 'node';
+    newConfig.target = 'node';
+
+    // Add custom externals as server doesn't need to bundle everything
+    newConfig.externals = [
+      '@loadable/component',
+      nodeExternals(), // Ignore all modules in node_modules folder
+    ];
+
+    // Use a 'node' subdirectory for the server build
+    newConfig.output.path = isEnvProduction
+      ? path.join(paths.appBuild, 'node')
+      : undefined;
+
+    // Set build output specifically for node
+    newConfig.output.libraryTarget = 'commonjs2';
+    newConfig.output.filename = '[name].[contenthash:8].js';
+    newConfig.output.chunkFilename = '[name].[contenthash:8].chunk.js';
+
+    // Disable runtimeChunk as it seems to break the server build
+    newConfig.optimization.runtimeChunk = undefined;
+  }
+
+  return newConfig;
 };
 
 module.exports = {
