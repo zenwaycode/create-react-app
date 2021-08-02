@@ -40,7 +40,36 @@ const configFactory = require('../config/webpack.config');
 const paths = require('../config/paths');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
-const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
+
+//
+// Override the default hosting instructions with FTW specific instructions.
+//
+// const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
+//
+function printHostingInstructions(
+  appPackage,
+  publicUrl,
+  publicPath,
+  buildFolder,
+  useYarn
+) {
+  console.log();
+  console.log(`The ${chalk.cyan(buildFolder)} folder is ready to be deployed.`);
+  console.log();
+  console.log('You may serve it by running:');
+  console.log();
+  console.log(`  ${chalk.cyan('yarn')} start`);
+  console.log();
+  console.log('Find out more about deployment here:');
+  console.log();
+  console.log(
+    `  ${chalk.yellow(
+      'https://www.sharetribe.com/docs/ftw-hosting/how-to-deploy-ftw-to-production/'
+    )}`
+  );
+  console.log();
+}
+
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
 
