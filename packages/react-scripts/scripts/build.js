@@ -42,7 +42,7 @@ const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 
 //
-// Override the default hosting instructions with FTW specific instructions.
+// Sharetribe custom: override the default hosting instructions with FTW specific instructions.
 //
 // const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
 //
