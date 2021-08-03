@@ -56,11 +56,25 @@ function printHostingInstructions(
   console.log();
   console.log(`The ${chalk.cyan(buildFolder)} folder is ready to be deployed.`);
   console.log();
-  console.log('You may serve it by running:');
+  console.log(
+    'In local development machine you may serve it on production mode by running:'
+  );
+  console.log();
+  console.log(`  NODE_ENV=production PORT=3000 ${chalk.cyan('yarn')} start`);
+  console.log();
+  console.log(
+    'In production server (e.g. Heroku) we recommend you to set the environment'
+  );
+  console.log(
+    `variables ${chalk.cyan('NODE_ENV')} and ${chalk.cyan(
+      'PORT'
+    )} using provider\'s own mechanism to manage`
+  );
+  console.log('environment variables, and then start the app by running:');
   console.log();
   console.log(`  ${chalk.cyan('yarn')} start`);
   console.log();
-  console.log('Find out more about deployment here:');
+  console.log('Find out more about environment variables and deployment here:');
   console.log();
   console.log(
     `  ${chalk.yellow(
