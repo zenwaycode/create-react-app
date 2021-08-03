@@ -23,6 +23,7 @@ which version of `react-scripts` this fork is built from.
 - Use [postcss-import](https://github.com/postcss/postcss-import)
 - Use [postcss-apply](https://github.com/pascalduez/postcss-apply)
 - A separate `build-server` script that makes a build to use in SSR (server side rendering)
+- Show customized instructions how to run the production build bundle
 
 ## Development
 
