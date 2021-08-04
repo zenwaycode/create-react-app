@@ -40,7 +40,50 @@ const configFactory = require('../config/webpack.config');
 const paths = require('../config/paths');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
-const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
+
+//
+// Sharetribe custom: override the default hosting instructions with FTW specific instructions.
+//
+// const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
+//
+function printHostingInstructions(
+  appPackage,
+  publicUrl,
+  publicPath,
+  buildFolder,
+  useYarn
+) {
+  console.log();
+  console.log(`The ${chalk.cyan(buildFolder)} folder is ready to be deployed.`);
+  console.log();
+  console.log(
+    'In local development machine you may serve it on production mode by running:'
+  );
+  console.log();
+  console.log(`  NODE_ENV=production PORT=3000 ${chalk.cyan('yarn')} start`);
+  console.log();
+  console.log(
+    'In production server (e.g. Heroku) we recommend you to set the environment'
+  );
+  console.log(
+    `variables ${chalk.cyan('NODE_ENV')} and ${chalk.cyan(
+      'PORT'
+    )} using provider\'s own mechanism to manage`
+  );
+  console.log('environment variables, and then start the app by running:');
+  console.log();
+  console.log(`  ${chalk.cyan('yarn')} start`);
+  console.log();
+  console.log('Find out more about environment variables and deployment here:');
+  console.log();
+  console.log(
+    `  ${chalk.yellow(
+      'https://www.sharetribe.com/docs/ftw-hosting/how-to-deploy-ftw-to-production/'
+    )}`
+  );
+  console.log();
+}
+
 const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
 const printBuildError = require('react-dev-utils/printBuildError');
 
