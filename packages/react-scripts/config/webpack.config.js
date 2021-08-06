@@ -763,13 +763,13 @@ module.exports = function(webpackEnv, target = 'web') {
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
         }),
-      !disableESLintPlugin &&
+        !disableESLintPlugin &&
         new ESLintPlugin({
           // Plugin options
           extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
           formatter: require.resolve('react-dev-utils/eslintFormatter'),
           eslintPath: require.resolve('eslint'),
-          emitWarning: isEnvDevelopment && emitErrorsAsWarnings,
+          failOnError: !(isEnvDevelopment && emitErrorsAsWarnings),
           context: paths.appSrc,
           cache: true,
           cacheLocation: path.resolve(
